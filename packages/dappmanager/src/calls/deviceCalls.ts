@@ -1,13 +1,13 @@
 import {
   AdminPasswordDb,
   AdminPasswordDbError
-} from "../../api/auth/adminPasswordDb";
-import { VpnApiClient } from "../../api/vpnApiClient";
+} from "../api/auth/adminPasswordDb";
+import { VpnApiClient } from "../api/vpnApiClient";
 import {
   VpnDeviceCredentials,
   VpnDevice,
   VpnDeviceAdminPassword
-} from "../../types";
+} from "../types";
 
 // Temporal solution until eventBus is properly typed
 interface EventBusDevices {

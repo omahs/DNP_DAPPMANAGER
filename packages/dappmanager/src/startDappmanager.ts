@@ -7,8 +7,8 @@ import {
 import { Logs } from "./logs";
 import { EventBus } from "./eventBus";
 import { LoggerMiddleware, Routes } from "./types";
-import { DeviceCalls } from "./calls/device";
-import { SshCalls } from "./calls/ssh";
+import { DeviceCalls } from "./calls/deviceCalls";
+import { SshCalls } from "./calls/sshCalls";
 import { startHttpApi, HttpApiParams, HttpRoutes } from "./api/startHttpApi";
 import { VpnApiClient } from "./api/vpnApiClient";
 import { SshManager } from "./modules/sshManager";
