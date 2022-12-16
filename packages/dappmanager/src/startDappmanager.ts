@@ -7,8 +7,7 @@ import {
 import { Logs } from "./logs";
 import { EventBus } from "./eventBus";
 import { LoggerMiddleware, Routes } from "@dappnode/common";
-import { DeviceCalls } from "./calls/device";
-import { SshCalls } from "./calls/ssh";
+import { DeviceCalls, SshCalls } from "./calls";
 import { startHttpApi, HttpApiParams, HttpRoutes } from "./api/startHttpApi";
 import { VpnApiClient } from "./api/vpnApiClient";
 import { SshManager } from "./modules/sshManager";
