@@ -1,8 +1,8 @@
 import {
   AdminPasswordDb,
   AdminPasswordDbError
-} from "../api/auth/adminPasswordDb";
-import { VpnApiClient } from "../api/vpnApiClient";
+} from "../../api/auth/adminPasswordDb";
+import { VpnApiClient } from "../../api/vpnApiClient";
 import {
   VpnDeviceCredentials,
   VpnDevice,
