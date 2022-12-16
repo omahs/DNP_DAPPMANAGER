@@ -17,8 +17,9 @@
     "test": "lerna run test --stream",
     "lint": "lerna run lint --stream",
     "test:int": "lerna run test:int --stream",
-    "pre-commit": "lerna run pre-commit --stream",
-    "postinstall": "patch-package"
+    "test:end": "lerna run test:end --stream",
+    "postinstall": "patch-package",
+    "pre-commit": "lerna run pre-commit --stream"
   },
   "dependencies": {
     "lerna": "^6.3.0",
