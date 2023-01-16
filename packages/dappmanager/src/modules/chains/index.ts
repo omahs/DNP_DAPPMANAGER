@@ -1,4 +1,4 @@
-import { ChainData } from "../../types";
+import { ChainData } from "@dappnode/common";
 import { logs } from "../../logs";
 import { listPackages } from "../docker/list";
 import { parseChainErrors } from "./utils";
@@ -52,5 +52,5 @@ export async function getChainsData(): Promise<ChainData[]> {
     })
   );
 
-  return chainsData;
+  return chainsData.sort((a, b) => a.dnpName.localeCompare(b.dnpName));
 }

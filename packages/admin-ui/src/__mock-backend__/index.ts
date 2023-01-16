@@ -1,4 +1,4 @@
-import { PortProtocol, Routes, IpfsClientTarget } from "../common";
+import { IpfsClientTarget, PortProtocol, Routes } from "@dappnode/common";
 import { autoUpdate } from "./autoUpdate";
 import { devices } from "./devices";
 import { dockerUpdate } from "./dockerUpdate";
@@ -122,9 +122,7 @@ export const otherCalls: Omit<Routes, keyof typeof namedSpacedCalls> = {
       dnpName: "dnp.prysm.eth"
     }
   ],
-  dappnodeWebNameSet: async newDappnodeWebName => {
-    dappnodeWebName = newDappnodeWebName;
-  },
+  dappnodeWebNameSet: async newDappnodeWebName => {},
   statsCpuGet: async () => ({
     usedPercentage: 88
   }),

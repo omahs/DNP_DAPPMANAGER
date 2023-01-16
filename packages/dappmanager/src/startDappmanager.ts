@@ -6,7 +6,7 @@ import {
 } from "./api/auth/adminPasswordDb";
 import { Logs } from "./logs";
 import { EventBus } from "./eventBus";
-import { LoggerMiddleware, Routes } from "./types";
+import { LoggerMiddleware, Routes } from "@dappnode/common";
 import { DeviceCalls } from "./calls/device";
 import { SshCalls } from "./calls/ssh";
 import { startHttpApi, HttpApiParams, HttpRoutes } from "./api/startHttpApi";
@@ -19,6 +19,8 @@ export function startDappmanager({
   params,
   logs,
   routes,
+  limiterMiddleware,
+  counterViewsMiddleware,
   ethForwardMiddleware,
   routesLogger,
   methods,
@@ -31,6 +33,8 @@ export function startDappmanager({
   params: DappmanagerParams;
   logs: Logs;
   routes: HttpRoutes;
+  limiterMiddleware: RequestHandler;
+  counterViewsMiddleware: RequestHandler;
   ethForwardMiddleware: RequestHandler;
   routesLogger: LoggerMiddleware;
   methods: Omit<Routes, keyof DeviceCalls | keyof SshCalls>;
@@ -53,6 +57,8 @@ export function startDappmanager({
     params,
     logs,
     routes,
+    limiterMiddleware,
+    counterViewsMiddleware,
     ethForwardMiddleware,
     routesLogger,
     methods: { ...methods, ...deviceCalls, ...sshCalls },

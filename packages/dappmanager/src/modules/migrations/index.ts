@@ -1,5 +1,4 @@
 import { setDefaultStakerConfig } from "./setDefaultStakerConfig";
-import AggregateError = require("aggregate-error");
 import { migrateUserActionLogs } from "./migrateUserActionLogs";
 import { removeLegacyDockerAssets } from "./removeLegacyDockerAssets";
 import { addAliasToRunningContainers } from "./addAliasToRunningContainers";
@@ -55,7 +54,10 @@ export async function executeMigrations(): Promise<void> {
     })
   );
 
-  setDefaultStakerConfig().catch(e =>
+  /**
+   * WARNING! This migration is dangerous if user has not set a staker config, the docker daemon can crash and is safer to not do it automatically
+   *  
+   setDefaultStakerConfig().catch(e =>
     migrationErrors.push({
       migration: "set default staker configuration",
       coreVersion: "v0.2.58",
@@ -64,6 +66,7 @@ export async function executeMigrations(): Promise<void> {
       stack: e.stack
     })
   );
+   */
 
   switchEthClientIfOpenethereumOrGethLight().catch(e =>
     migrationErrors.push({
@@ -86,5 +89,5 @@ export async function executeMigrations(): Promise<void> {
     })
   );
 
-  if (migrationErrors.length > 0) throw new AggregateError(migrationErrors);
+  if (migrationErrors.length > 0) throw migrationErrors;
 }

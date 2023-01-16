@@ -1,5 +1,5 @@
 import * as logUserAction from "../logUserAction";
-import { UserActionLog } from "../types";
+import { UserActionLog } from "@dappnode/common";
 
 /**
  * Returns the user action logs. This logs are stored in a different
@@ -11,6 +11,9 @@ import { UserActionLog } from "../types";
 export async function getUserActionLogs({
   first = 50,
   after = 0
+}: {
+  first?: number;
+  after?: number;
 }): Promise<UserActionLog[]> {
   return collapseEqualLogs(logUserAction.get().slice(after, after + first));
 }

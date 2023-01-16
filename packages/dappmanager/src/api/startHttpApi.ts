@@ -5,7 +5,7 @@ import compression from "compression";
 import fileUpload from "express-fileupload";
 import { helmetConf } from "./helmet";
 import cors from "cors";
-import socketio from "socket.io";
+import { Socket, Server } from "socket.io";
 import path from "path";
 import { toSocketIoHandler, wrapHandler } from "./utils";
 import { AuthPasswordSession, AuthPasswordSessionParams } from "./auth";
@@ -15,13 +15,13 @@ import { mapSubscriptionsToEventBus } from "./subscriptions";
 import { Logs } from "../logs";
 import { EventBus } from "../eventBus";
 import {
-  getRpcHandler,
-  subscriptionsFactory,
+  Routes,
   RpcPayload,
   RpcResponse,
   LoggerMiddleware,
-  Routes
-} from "../types";
+  subscriptionsFactory
+} from "@dappnode/common";
+import { getRpcHandler } from "./handler";
 
 export interface HttpApiParams
   extends ClientSideCookiesParams,
@@ -42,6 +42,7 @@ export interface HttpRoutes {
   globalEnvs: RequestHandler<{ name: string }>;
   notificationSend: RequestHandler;
   packageManifest: RequestHandler<{ dnpName: string }>;
+  metrics: RequestHandler;
   publicPackagesData: RequestHandler<{ containerName: string }>;
   sign: RequestHandler;
   upload: RequestHandler;
@@ -59,6 +60,8 @@ export function startHttpApi({
   params,
   logs,
   routes,
+  limiterMiddleware,
+  counterViewsMiddleware,
   ethForwardMiddleware,
   routesLogger,
   methods,
@@ -70,6 +73,8 @@ export function startHttpApi({
   params: HttpApiParams;
   logs: Logs;
   routes: HttpRoutes;
+  limiterMiddleware: express.RequestHandler;
+  counterViewsMiddleware: express.RequestHandler;
   ethForwardMiddleware: express.RequestHandler;
   routesLogger: LoggerMiddleware;
   methods: Routes;
@@ -80,7 +85,7 @@ export function startHttpApi({
 }): http.Server {
   const app = express();
   const server = new http.Server(app);
-  const io = new socketio.Server(server, { serveClient: false });
+  const io = new Server(server, { serveClient: false });
 
   // Subscriptions
   const subscriptions = subscriptionsFactory(io, subscriptionsLogger);
@@ -99,6 +104,8 @@ export function startHttpApi({
   app.use(bodyParser.json());
   app.use(bodyParser.text());
   app.use(bodyParser.urlencoded({ extended: true }));
+  // Intercept UI requests. Must go before express.static
+  app.use(counterViewsMiddleware);
   // Express uses "ETags" (hashes of the files requested) to know when the file changed
   app.use(express.static(path.resolve(params.UI_FILES_PATH), { maxAge: "1d" }));
 
@@ -144,6 +151,10 @@ export function startHttpApi({
   app.post("/register", auth.registerAdmin);
   app.post("/recover-pass", auth.recoverAdminPassword);
 
+  // Limit requests per IP for NON AUTH methods
+  // TODO: implement a more sophisticated rate limiter for auth methods
+  app.use(limiterMiddleware);
+
   // Ping - health check
   app.get("/ping", auth.onlyAdmin, (_, res) => res.send({}));
 
@@ -159,26 +170,25 @@ export function startHttpApi({
 
   // Open endpoints (no auth)
   app.get("/global-envs/:name?", routes.globalEnvs);
+  // prettier-ignore
   app.get("/public-packages/:containerName?", routes.publicPackagesData);
-  app.get("/package-manifest/:dnpName", routes.packageManifest);
+  // prettier-ignore
+  app.get("/package-manifest/:dnpName",routes.packageManifest);
+  app.get("/metrics", routes.metrics);
   app.post("/sign", routes.sign);
   app.post("/data-send", routes.dataSend);
   app.post("/notification-send", routes.notificationSend);
 
   // Rest of RPC methods
-  app.post(
-    "/rpc",
-    auth.onlyAdmin,
-    wrapHandler(async (req, res) => res.send(await rpcHandler(req.body)))
-  );
+  // prettier-ignore
+  app.post("/rpc",auth.onlyAdmin,wrapHandler(async (req, res) => res.send(await rpcHandler(req.body))));
 
   // Default error handler must be the last
   // app.use(errorHandler);
 
   // Serve UI. React-router, index.html at all routes
-  app.get("*", (req, res) =>
-    res.sendFile(path.resolve(params.UI_FILES_PATH, "index.html"))
-  );
+  // prettier-ignore
+  app.get("*", (req, res) => res.sendFile(path.resolve(params.UI_FILES_PATH, "index.html")));
 
   server.listen(params.HTTP_API_PORT, () =>
     logs.info(`HTTP API ${params.HTTP_API_PORT}`)

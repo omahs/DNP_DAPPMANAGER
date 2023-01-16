@@ -1,5 +1,5 @@
 import params from "../params";
-import { HttpsPortalMapping, ExposableServiceMapping } from "../types";
+import { HttpsPortalMapping, ExposableServiceMapping } from "@dappnode/common";
 import {
   HttpsPortal,
   HttpsPortalApiClient,
@@ -15,18 +15,22 @@ export const httpsPortal = new HttpsPortal(httpsPortalApiClient);
 /**
  * HTTPs Portal: map a subdomain
  */
-export async function httpsPortalMappingAdd(
-  mapping: HttpsPortalMapping
-): Promise<void> {
+export async function httpsPortalMappingAdd({
+  mapping
+}: {
+  mapping: HttpsPortalMapping;
+}): Promise<void> {
   await httpsPortal.addMapping(mapping);
 }
 
 /**
  * HTTPs Portal: remove an existing mapping
  */
-export async function httpsPortalMappingRemove(
-  mapping: HttpsPortalMapping
-): Promise<void> {
+export async function httpsPortalMappingRemove({
+  mapping
+}: {
+  mapping: HttpsPortalMapping;
+}): Promise<void> {
   await httpsPortal.removeMapping(mapping);
 }
 
